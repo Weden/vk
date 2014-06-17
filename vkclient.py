@@ -63,17 +63,18 @@ class VKClient(object):
 
     def upload(self, upload_url, files):
         upload_url = str(upload_url)
-        boundary = uuid.uuid4().hex
         data = []
+        boundary = uuid.uuid4().hex
+        default_ctype = 'application/x-unknown'
         for name, path in files.items():
             if re.match('https?://', path, re.I):
                 u = urllib.urlopen(path)
-                content_type = u.info()['content-type']
+                content_type = u.info().get('content-type', default_ctype)
                 content = u.read()
             else:
                 path = path.encode(sys.getfilesystemencoding())
                 extension = os.path.splitext(path)[1]
-                content_type = mimetypes.types_map[extension] if extension in mimetypes.types_map else 'application/octet-stream'
+                content_type = mimetypes.types_map[extension] if extension in mimetypes.types_map else default_ctype
                 f = open(path, 'rb')
                 content = f.read()
                 f.close()
