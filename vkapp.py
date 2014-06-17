@@ -16,14 +16,10 @@ class VKApp(VKClient):
             self.client_id = 2274003
             self.client_secret = 'hHbZxrka2uZ6jB1inYsH'
             self.scope = 'notify,friends,photos,audio,video,docs,notes,wall,groups,messages,notifications,activity,status,pages,stats'
-            self.grant_type = 'password'
-            self.auth_type = 'token'
         elif client == 'win8': # blocked
             self.client_id = 2692017
             self.client_secret = 'rqIkXYBauPjqE2EVxB2j'
             self.scope = 'notify,friends,photos,audio,video,docs,notes,wall,groups,messages,notifications,activity,status,pages,stats'
-            self.grant_type = 'password'
-            self.auth_type = 'token'
 
     def login(self, username, password):
         self.auth({
@@ -32,5 +28,5 @@ class VKApp(VKClient):
             'client_id': self.client_id,
             'client_secret': self.client_secret,
             'scope': self.scope,
-            'grant_type': self.grant_type
-        }, self.auth_type)
+            'grant_type': 'password'
+        }, 'token')
