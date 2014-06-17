@@ -7,17 +7,18 @@ class VKApp(VKClient):
         super(VKApp, self).__init__(*args, **kwargs)
         self.process_captcha = process_captcha
         self.delay_time = 1.0 / 5
-        self.set_client('android')
+        self.set_client('iphone')
 
-    def set_client(self, client=None):
-        client = str(client).lower()
-        # офиц приложение под android
+    def set_client(self, client):
+        client = client.lower()
         if client == 'android':
             self.client_id = 2274003
             self.client_secret = 'hHbZxrka2uZ6jB1inYsH'
-        elif client == 'win8': # blocked
-            self.client_id = 2692017
-            self.client_secret = 'rqIkXYBauPjqE2EVxB2j'
+        elif client == 'iphone':
+            self.client_id = 3140623
+            self.client_secret = 'VeWdmVclDCtn6ihuP1nt'
+        else:
+            raise Exception('Unknown client')
 
     def login(self, username, password):
         self.auth({
@@ -25,6 +26,5 @@ class VKApp(VKClient):
             'password': password,
             'client_id': self.client_id,
             'client_secret': self.client_secret,
-            'scope': 'notify,friends,photos,audio,video,docs,notes,wall,groups,messages,notifications,activity,status,pages,stats',
             'grant_type': 'password'
         }, 'token')
