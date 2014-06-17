@@ -17,24 +17,21 @@ class VKClientError(Exception):
     pass
 
 class VKClient(object):
-    def __init__(self, api_version=None, access_token=None, user_id=None, expires=None):
+    def __init__(self, api_version):
         self.api_version = api_version
-        self.access_token = access_token
-        self.user_id = user_id
-        self.expires = expires
         self.user_agent = 'VKClient (Python %s.%s.%s)' % sys.version_info[:3]
         self.auth_url = 'https://oauth.vk.com/'
         self.api_url = 'https://api.vk.com/method/'
         self.delay_time = 0
 
-    def auth(self, params, auth_type='authorize'):
-        params['v'] = self.api_version
+    def auth(self, auth_method, params):
+        params.setdefault('v', self.api_version)
         self.encode_params(params)
-        response = self.get_json(self.auth_url + auth_type + '?' + urllib.urlencode(params))
+        response = self.get_json(self.auth_url + auth_method + '?' + urllib.urlencode(params))
         if 'error' in response:
             if response['error'] == 'need_captcha':
                 self.captcha_params(params, response)
-                return self.auth(params)
+                return self.auth(auth_method, params)
             if response['error'] == 'need_validation' and 'redirect_uri' in response:
                 webbrowser.open(response['redirect_uri'])
             raise VKClientError(response['error'] + ': ' + response['error_description'])
@@ -44,20 +41,20 @@ class VKClient(object):
         if 'expires_in' in response and response['expires_in'] > 0:
             self.expires = time.time() + response['expires_in']
 
-    def api(self, method, params={}):
+    def api(self, api_method, params={}):
         self.delay()       
-        params['v'] = self.api_version
+        params.setdefault('v', self.api_version)
         if self.access_token:
-            params['access_token'] = self.access_token
+            params.setdefault('access_token', self.access_token)
         self.encode_params(params)
         data = urllib.urlencode(params)
         headers = {'Content-Type': 'application/x-www-form-urlencoded'}
-        response = self.get_json(self.api_url + method, data, headers)
+        response = self.get_json(self.api_url + api_method, data, headers)
         if 'error' in response:
             response = response['error']
             if response['error_code'] == 14:
                 self.captcha_params(params, response)
-                return self.api(method, params)
+                return self.api(api_method, params)
             raise VKClientError('API Error: %s - %s' % (response['error_code'], response['error_msg']))
         return response['response']
 
@@ -99,7 +96,7 @@ class VKClient(object):
     def delay(self):
         time.sleep(self.delay_time)
 
-    def get_json(self, url, data=None, headers={}):
+    def get_json(self, url, data=None, headers={}, **kwargs):
         headers.setdefault('User-Agent', self.user_agent)
         request = urllib2.Request(url, data, headers)
         try:
