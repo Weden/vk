@@ -3,11 +3,13 @@ from vkclient import VKClient, VKClientError
 from captcha import process_captcha
 
 class VKApp(VKClient):
-    def __init__(self, *args, **kwargs):
-        super(VKApp, self).__init__(*args, **kwargs)
+    def __init__(self, username=0, password=0, api_version=0, client='android'):
+        super(VKApp, self).__init__(api_version)
+        self.username = username
+        self.password = password
+        self.choose_client(client)
         self.process_captcha = process_captcha
         self.delay_time = 1.0 / 5
-        self.choose_client('iphone')
 
     def choose_client(self, client):
         client = client.lower()
@@ -20,11 +22,15 @@ class VKApp(VKClient):
         else:
             raise Exception('Unknown client')
 
-    def login(self, username, password):
+    def login(self):
         self.auth({
-            'username': username,
-            'password': password,
+            'username': self.username,
+            'password': self.password,
             'client_id': self.client_id,
             'client_secret': self.client_secret,
             'grant_type': 'password'
         }, 'token')
+
+    def change_client(self, client):
+        self.choose_client(client)
+        self.login()
