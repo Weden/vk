@@ -1,9 +1,11 @@
 # -*- coding: utf8 -*-
 from vkapp import *
 
-vk = VKApp('<username>', '<password>', 5.21)
-# пробуем авторизоваться
-vk.login()
+username = '<username>'
+password = '<password>'
+vk = VKApp(5.21)
+vk.login(username, password)
 vk.api('wall.post', {'message': u'Тест #1'})
-vk.change_client('IPHONE')
+vk.choose_client('IPHONE')
+vk.login(username, password)
 vk.api('wall.post', {'message': u'Тест #2'})
