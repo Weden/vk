@@ -1,6 +1,9 @@
 # -*- coding: utf8 -*-
 from vkapp import *
 
-app = VKApp(5.21)
-app.login('<email>', '<password>')
-print app.api('wall.post', {'message': u'Я хуй'})
+vk = VKApp(5.21)
+# маскируемся под офиц приложение для android
+vk.set_client('android')
+vk.login('<email>', '<password>')
+r = vk.api('wall.post', {'message': u'Тест'})
+print r
