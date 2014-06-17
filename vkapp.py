@@ -7,9 +7,9 @@ class VKApp(VKClient):
         super(VKApp, self).__init__(*args, **kwargs)
         self.process_captcha = process_captcha
         self.delay_time = 1.0 / 5
-        self.set_client('iphone')
+        self.choose_client('iphone')
 
-    def set_client(self, client):
+    def choose_client(self, client):
         client = client.lower()
         if client == 'android':
             self.client_id = 2274003
